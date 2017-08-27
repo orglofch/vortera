@@ -1,0 +1,19 @@
+[package]
+name = "vortera"
+version = "0.1.0"
+authors = ["Owen Glofcheski <owen.glofcheski@gmail.com>"]
+
+[dependencies]
+cgmath = "0.15.0"
+delaunay2d = "0.0.1"
+gl = "*"         # BIN ONLY
+glutin = "0.9.2" # BIN ONLY
+libc = "*"       # BIN ONLY
+noise = "0.4.1"
+rand = "0.3"
+
+[lib]
+name = "lib"
+
+[[bin]]
+name = "main"
