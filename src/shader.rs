@@ -1,10 +1,6 @@
 extern crate gl;
 
-#[cfg(debug_assertions)]
-extern crate notify;
-
 use gl::types::*;
-use self::notify::{RecommendedWatcher, Watcher, RecursiveMode};
 use std::ffi::CString;
 use std::fs::File;
 use std::io::Read;
@@ -45,15 +41,7 @@ impl Shader {
 
         let program = Shader::compile_and_link(&vs_src, &fs_src);
 
-        let shader = Shader { id: program };
-
-        if cfg!(debug_assertions) {
-            // Initialize shader hot-loading.
-            Shader::debug_watch_thread(&shader, vs_path.to_owned());
-            Shader::debug_watch_thread(&shader, fs_path.to_owned());
-        }
-
-        shader
+        Shader { id: program }
     }
 
     /**
@@ -78,14 +66,7 @@ impl Shader {
 
         let program = Shader::compile_and_link(&vs_src, &fs_src);
 
-        let shader = Shader { id: program };
-
-        if cfg!(debug_assertions) {
-            // Initialize shader hot-loading.
-            Shader::debug_watch_thread(&shader, vs_fs_path.to_owned());
-        }
-
-        shader
+        Shader { id: program }
     }
 
     /** Compile and link a vertex and fragment shader into a single program. */
@@ -166,29 +147,5 @@ impl Shader {
                              buffer.as_mut_ptr() as *mut GLchar);
 
         return String::from_utf8(buffer).expect("Shader info-log couldn't be parsed as utf8");
-    }
-
-    fn debug_watch_thread(shader: &Shader, path: String) {
-        /*thread::spawn(move || {
-            if let Err(e) = Shader::debug_watch(shader, &path.clone()) {
-                panic!("Failed to watch {}, error: {:?}", path, e);
-            }
-        });*/
-    }
-
-    fn debug_watch(shader: &Shader, path: &str) -> notify::Result<()> {
-        // Create a channel to receive the events.
-        let (tx, rx) = channel();
-
-        let mut watcher: RecommendedWatcher = try!(Watcher::new_raw(tx));
-
-        try!(watcher.watch(path, RecursiveMode::NonRecursive));
-
-        loop {
-            match rx.recv() {
-                Ok(event) => println!("{:?}", event),
-                Err(e) => println!("watch error: {:?}", e),
-            }
-        }
     }
 }

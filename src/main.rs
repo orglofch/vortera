@@ -7,6 +7,7 @@ mod shader;
 
 use cgmath::{Deg, Matrix, Matrix4, One, vec3, perspective};
 use glutin::GlContext;
+use shader::Shader;
 use std::ffi::CStr;
 
 macro_rules! c_str {
